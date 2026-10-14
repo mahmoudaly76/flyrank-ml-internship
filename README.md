@@ -1,3 +1,9 @@
+# 🏢 Real Estate Digital Portfolio Management — Machine Learning Capstone
+
+> 🚀 **Live Interactive Research Paper:** [Read Deployed Paper Here](https://mahmoudaly76.github.io/flyrank-ml-internship/work/capstone_report_template.html)  
+> 📓 **Source Code & Model:** [View Jupyter Notebook](https://github.com/mahmoudaly76/flyrank-ml-internship/blob/main/work/notebooks/capstone.ipynb)
+
+---
 # FlyRank ML Internship — Starter Repo
 
 **Applied Search Intelligence: Google Search Ranking & Discoverability**
