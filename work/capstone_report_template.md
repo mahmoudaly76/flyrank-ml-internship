@@ -1,78 +1,69 @@
-# Capstone Report — <your lane>
+# Capstone Report — Structured Content Archetype Clustering
 
-- **Author:**
-- **Lane:**
-- **Repo:**
-- **Date:**
+- **Author:** Mahmoud Aly Fawal
+- **Lane:** Lane 3: Structured Content Archetype Clustering
+- **Repo:** https://github.com/mahmoudaly76/flyrank-ml-internship
+- **Date:** October 14, 2026
 
-> Copy this file to `work/capstone_report.md` and fill it in as you build. Sections 1–8
-> mirror the Pass / Needs-Work rubric axes, so nothing here is optional. Sections 0 and 9
-> are **paper sections**: your deployed research paper must carry both, and they're here so
-> you never rebuild them from memory at ship time.
+# Capstone: Real Estate Digital Portfolio Management
+**Lane 3: Structured Content Archetype Clustering**
 
 ## 0. Abstract
-
-Five sentences, written last, placed first: question → data → method → headline result →
-what the output is for. This is the top of your deployed paper.
+How can we automate digital asset management for a massive real estate portfolio to maximize search traffic ROI? Using the FlyRank ML Internship dataset, we analyzed the search performance of 50,000 property and content pages. We applied an unsupervised K-Means clustering model to segment these pages based on log-transformed impressions, CTR, and average position. The model successfully isolated four actionable performance archetypes, including 697 high-visibility "Traffic Titans" that suffer from poor conversion. This output provides SEO and marketing teams with a prioritized, automated playbook to Protect, Improve, Refresh, or Prune digital assets.
 
 ## 1. Problem framing
-
-What decision does this support? Name the unit of analysis (page, client, day…), the output
-(score, rank, cluster, report), the action a human takes from it, and the cost of a wrong
-call. Why does data/ML help here at all?
+* **Decision supported:** Allocating SEO and digital marketing resources (budget and copywriting hours) efficiently across a massive portfolio of real estate pages.
+* **Unit of analysis:** The individual web page (URL).
+* **Output:** A segmented cluster assignment (4 archetypes) for each page.
+* **Action:** A human editor uses this to decide whether to Protect, Improve (change meta-titles), Update (refresh prices/content), or Prune (delete/redirect) a page.
+* **Cost of a wrong call:** Wasting copywriting budget on dead pages (sold-out projects) or accidentally deleting/altering a high-performing "Golden" asset, causing a drop in leads.
+* **Why ML helps:** Manual audits using rigid heuristic rules fail to capture the nuanced relationships between impressions, CTR, and ranking across tens of thousands of pages.
 
 ## 2. Data safety
-
-Which data you used and which columns you deliberately excluded (and why). Leakage risks you
-considered — especially label-derived fields (`trend_direction`, `trend_pct`) and pseudonymous
-IDs (grouping only, never features). Confirm nothing client-identifying appears anywhere in
-`work/`.
+* **Data used:** `fact_content_daily_performance` parquet files from the FlyRank warehouse via DuckDB.
+* **Excluded data:** Pages with fewer than 100 total impressions were deliberately excluded to remove statistical noise (zero-click anomalies) and focus on assets with sufficient search presence.
+* **Leakage risks:** Since this is an unsupervised clustering task, no future-window target labels were used. Pseudonymous IDs (`client_hash_id`) were ignored, and the model was trained strictly on aggregated performance metrics.
+* **Safety confirmation:** Aggregated at the URL hash level. No client names, raw search queries, URLs, domains, or PII appear anywhere in the `/work` directory.
 
 ## 3. Baseline
-
-The transparent rule or score you built first. Why it's a fair comparison, and its numbers on
-the same data and metric as your model.
+* **The baseline:** A transparent, static rules-based heuristic (e.g., IF impressions > 5,000 AND CTR < 0.02 THEN "Needs Review"). 
+* **Why it's fair:** This is the standard industry practice for SEO audits (using fixed filters in Excel or Google Search Console). 
+* **Comparison:** On this 50k dataset, the baseline produces a massive, flat list of URLs that requires manual sorting. In contrast, our K-Means model evaluates the multi-dimensional distance between assets, resulting in a prioritized, segmented portfolio rather than a binary "pass/fail" list.
 
 ## 4. Model / analysis
-
-Your method and why it fits the lane. The exact feature list (and what you left out on
-purpose). The target or proxy definition, in one sentence.
+* **Method:** Unsupervised Machine Learning (K-Means Clustering). It perfectly fits Lane 3 (Structured Content Archetype Clustering).
+* **Feature list:** `log_impressions` (log-transformed to prevent extreme outliers from skewing distances), `ctr` (clicks/impressions), and `avg_position`.
+* **Left out on purpose:** Raw impressions were excluded (replaced by log) because a few mega-pages would dominate the variance and collapse the clusters.
+* **Target definition:** An unsupervised segmentation of digital asset health into 4 distinct business archetypes.
 
 ## 5. Evaluation
-
-Your split (grouped by client? time-aware?) and why. Metrics, model vs baseline **on the same
-split**. What the errors look like — a short error analysis beats a big metric table.
+* **Split:** The model was trained and evaluated on the full 50,000 aggregated URL dataset (unsupervised segmentation does not require a train/test split for prediction).
+* **Model vs Baseline:** The baseline heuristic groups massive-impression/low-CTR pages together with low-impression/low-CTR pages as simply "Bad". The K-Means model successfully separated them, finding a distinct cluster of 697 "Traffic Titans"—pages with massive reach but poor conversion.
+* **Errors / Limitations:** The model is directional and observational. A well-understood limitation is that it ignores off-platform real estate seasonality (e.g., summer vacation homes peaking in June) which could explain CTR drops, not necessarily content decay.
 
 ## 6. Interpretation
-
-What the model/clusters actually found. Feature importances or cluster profiles in plain
-words. Surprises and negative results — a well-understood "no effect" is a valid result.
+The K-Means model clustered the portfolio into 4 clear profiles:
+1. **Cluster 2 (Golden Assets - 2,976 pages):** High CTR, moderate-high visibility. These are converting well.
+2. **Cluster 3 (Traffic Titans - 697 pages):** Massive impressions but extremely low CTR. 
+3. **Cluster 0 (Underperformers - 21,742 pages):** Moderate visibility, decaying engagement.
+4. **Cluster 1 (Dead Assets - 24,585 pages):** Low visibility, low CTR.
+* **Surprise:** The "Traffic Titans" group was surprisingly small (just 1.4% of the portfolio) but holds the highest immediate ROI potential for the business.
 
 ## 7. Recommendation
-
-The ranked actions or decisions your output supports, and how a FlyRank editor would use them
-tomorrow. State your confidence and the limits explicitly.
+Here is the ranked action playbook for a FlyRank editor or Real Estate marketing team:
+1. **Priority 1 - Improve (The 697 Traffic Titans):** Export this list to copywriters immediately. Add high-intent modifiers to meta-titles (e.g., "Installments", "Ready to Move") to capture the massive demand already seeing these pages.
+2. **Priority 2 - Refresh (The 21k Underperformers):** Schedule for Q2 content updates. Refresh property prices, images, and delivery dates to signal content freshness to search engines.
+3. **Priority 3 - Prune (The 24k Dead Assets):** Bulk archive or 301-redirect these pages (likely sold-out projects) to category pages to conserve crawl budget.
+4. **Ongoing - Protect (The 2k Golden Assets):** Do not alter core URLs or headings. Monitor for any drops.
+* **Confidence & Limits:** High confidence in cluster distinctness, but actions are decision-support, not guaranteed causal fixes.
 
 ## 8. Reproducibility
-
-The exact commands to re-run everything from a fresh clone, your random seeds, and your
-environment (`pip freeze` highlights or `requirements.txt` deltas). If you claim a sealed or
-holdout evaluation, two things must be committed: the cell/script that builds the sealed
-frame, and the metrics file it produced — "evaluated once, blind" should be checkable from
-your repo, not taken on faith.
+To re-run this analysis from a fresh clone:
+1. **Environment:** `pip install duckdb pandas scikit-learn seaborn matplotlib`
+2. **Execution:** Open `work/notebooks/capstone.ipynb` and Run All Cells.
+3. **Random Seed:** The K-Means model uses `random_state=42` and `n_init=10` to guarantee identical cluster assignments on every run.
+4. **Output:** The run will automatically generate the clustered CSV output in `work/outputs/capstone_clustered_portfolio.csv`.
 
 ## 9. Acknowledgments & data credit
-
-One short section at the bottom of the deployed paper: "Built on the FlyRank ML Internship
-dataset" **linking to https://flyrank.ai**. Crediting your data source is standard research
-practice — and it's on the capstone's required-section list, so a paper without it isn't done.
-
----
-
-> **Claims checklist before submitting:** observed / measured / directional / decision-support
-> **Metrics vs. base rate:** report your task's base rate (majority-class %) next to any
-> precision@K or accuracy — a high score can just be a high base rate. AUC / lift over
-> baseline are the honest discrimination numbers.
-> language everywhere · no causal claims without an experiment or causal design · no
-> "predicted Google's algorithm" · no client-identifying details · numbers in this report
-> match a fresh re-run.
+Built on the FlyRank ML Internship dataset.
+Explore the data and platform at [https://flyrank.ai](https://flyrank.ai)
